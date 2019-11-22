@@ -41,6 +41,7 @@ public class Constants {
     public static final String EVENT_UPDATE_INSTALL = "updateInstall";
     public static final String EVENT_ABORT_INSTALL_COMPLETION = "abortInstallUpdateCompletion";
     public static final String EVENT_ABORT_CREATE_PAYMENT_COMPLETION = "abortCreatePaymentCompletion";
+    public static final String EVENT_CANCEL_COLLECT_PAYMENT_COMPLETION = "cancelCollectPaymentCompletion";
 
     //JSON keys
     public static final String ERROR ="error";
