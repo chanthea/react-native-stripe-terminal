@@ -11,15 +11,15 @@ class StripeTerminal {
   // Discovery methods
   DiscoveryMethodBluetoothScan = RNStripeTerminal.DiscoveryMethodBluetoothScan;
   DiscoveryMethodBluetoothProximity =
-    RNStripeTerminal.DiscoveryMethodBluetoothProximity;
+      RNStripeTerminal.DiscoveryMethodBluetoothProximity;
 
   // Payment intent statuses
   PaymentIntentStatusRequiresPaymentMethod =
-    RNStripeTerminal.PaymentIntentStatusRequiresPaymentMethod;
+      RNStripeTerminal.PaymentIntentStatusRequiresPaymentMethod;
   PaymentIntentStatusRequiresConfirmation =
-    RNStripeTerminal.PaymentIntentStatusRequiresConfirmation;
+      RNStripeTerminal.PaymentIntentStatusRequiresConfirmation;
   PaymentIntentStatusRequiresCapture =
-    RNStripeTerminal.PaymentIntentStatusRequiresCapture;
+      RNStripeTerminal.PaymentIntentStatusRequiresCapture;
   PaymentIntentStatusCanceled = RNStripeTerminal.PaymentIntentStatusCanceled;
   PaymentIntentStatusSucceeded = RNStripeTerminal.PaymentIntentStatusSucceeded;
 
@@ -31,9 +31,9 @@ class StripeTerminal {
   PaymentStatusNotReady = RNStripeTerminal.PaymentStatusNotReady;
   PaymentStatusReady = RNStripeTerminal.PaymentStatusReady;
   PaymentStatusWaitingForInput =
-    RNStripeTerminal.PaymentStatusWaitingForInput;
+      RNStripeTerminal.PaymentStatusWaitingForInput;
   PaymentStatusProcessing =
-    RNStripeTerminal.PaymentStatusProcessing;
+      RNStripeTerminal.PaymentStatusProcessing;
 
   // Connection status
   ConnectionStatusNotConnected = RNStripeTerminal.ConnectionStatusNotConnected;
@@ -42,21 +42,21 @@ class StripeTerminal {
 
   // Fetch connection token. Overwritten in call to initialize
   _fetchConnectionToken = () =>
-    Promise.reject('You must initialize RNStripeTerminal first.');
+      Promise.reject('You must initialize RNStripeTerminal first.');
 
   constructor() {
     this.listener = new NativeEventEmitter(RNStripeTerminal);
 
     this.listener.addListener('requestConnectionToken', () => {
       this._fetchConnectionToken()
-        .then(token => {
-          if (token) {
-            RNStripeTerminal.setConnectionToken(token, null);
-          } else {
-            throw new Error('User-supplied `fetchConnectionToken` resolved successfully, but no token was returned.');
-          }
-        })
-        .catch(err => RNStripeTerminal.setConnectionToken(null, err.message || 'Error in user-supplied `fetchConnectionToken`.'));
+          .then(token => {
+            if (token) {
+              RNStripeTerminal.setConnectionToken(token, null);
+            } else {
+              throw new Error('User-supplied `fetchConnectionToken` resolved successfully, but no token was returned.');
+            }
+          })
+          .catch(err => RNStripeTerminal.setConnectionToken(null, err.message || 'Error in user-supplied `fetchConnectionToken`.'));
     });
 
     this._createListeners([
@@ -76,9 +76,9 @@ class StripeTerminal {
   _createListeners(keys) {
     keys.forEach(k => {
       this[`add${k[0].toUpperCase() + k.substring(1)}Listener`] = listener =>
-        this.listener.addListener(k, listener);
+          this.listener.addListener(k, listener);
       this[`remove${k[0].toUpperCase() + k.substring(1)}Listener`] = listener =>
-        this.listener.removeListener(k, listener);
+          this.listener.removeListener(k, listener);
     });
   }
 
@@ -100,24 +100,24 @@ class StripeTerminal {
   initialize({ fetchConnectionToken }) {
     this._fetchConnectionToken = fetchConnectionToken;
     return new Promise((resolve, reject)=>{
-    if(Platform.OS == "android"){
-      RNStripeTerminal.initialize((status)=>{
-        if(status.isInitialized === true){
-          resolve()
-        }else{
-          reject(status.error);
-        }
-      });
-    }else{
-      RNStripeTerminal.initialize();
-      resolve();
-    }
-  });
+      if(Platform.OS == "android"){
+        RNStripeTerminal.initialize((status)=>{
+          if(status.isInitialized === true){
+            resolve()
+          }else{
+            reject(status.error);
+          }
+        });
+      }else{
+        RNStripeTerminal.initialize();
+        resolve();
+      }
+    });
   }
 
-  discoverReaders(deviceType, method, simulated) {
+  discoverReaders() {
     return this._wrapPromiseReturn('readerDiscoveryCompletion', () => {
-      RNStripeTerminal.discoverReaders(deviceType, method, simulated);
+      RNStripeTerminal.discoverReaders();
     });
   }
 
@@ -171,61 +171,61 @@ class StripeTerminal {
 
   createPayment(options) {
     return this._wrapPromiseReturn(
-      'paymentCreation',
-      () => {
-        RNStripeTerminal.createPayment(options);
-      },
-      'intent',
+        'paymentCreation',
+        () => {
+          RNStripeTerminal.createPayment(options);
+        },
+        'intent',
     );
   }
 
   createPaymentIntent(options) {
     return this._wrapPromiseReturn(
-      'paymentIntentCreation',
-      () => {
-        RNStripeTerminal.createPaymentIntent(options);
-      },
-      'intent'
+        'paymentIntentCreation',
+        () => {
+          RNStripeTerminal.createPaymentIntent(options);
+        },
+        'intent'
     );
   }
 
   retrievePaymentIntent(clientSecret) {
     return this._wrapPromiseReturn(
-      'paymentIntentRetrieval',
-      () => {
-        RNStripeTerminal.retrievePaymentIntent(clientSecret);
-      },
-      'intent'
+        'paymentIntentRetrieval',
+        () => {
+          RNStripeTerminal.retrievePaymentIntent(clientSecret);
+        },
+        'intent'
     );
   }
 
   collectPaymentMethod() {
     return this._wrapPromiseReturn(
-      'paymentMethodCollection',
-      () => {
-        RNStripeTerminal.collectPaymentMethod();
-      },
-      'intent'
+        'paymentMethodCollection',
+        () => {
+          RNStripeTerminal.collectPaymentMethod();
+        },
+        'intent'
     );
   }
 
   processPayment() {
     return this._wrapPromiseReturn(
-      'paymentProcess',
-      () => {
-        RNStripeTerminal.processPayment();
-      },
-      'intent'
+        'paymentProcess',
+        () => {
+          RNStripeTerminal.processPayment();
+        },
+        'intent'
     );
   }
 
   cancelPaymentIntent() {
     return this._wrapPromiseReturn(
-      'paymentIntentCancel',
-      () => {
-        RNStripeTerminal.cancelPaymentIntent();
-      },
-      'intent'
+        'paymentIntentCancel',
+        () => {
+          RNStripeTerminal.cancelPaymentIntent();
+        },
+        'intent'
     );
   }
 
@@ -247,6 +247,12 @@ class StripeTerminal {
     })
   }
 
+  cancelCollectPayment() {
+    return this._wrapPromiseReturn('cancelCollectPaymentCompletion', () => {
+      RNStripeTerminal.cancelCollectPayment();
+    })
+  }
+
   startService(options) {
     if (typeof options === 'string') {
       options = { policy: options };
@@ -254,7 +260,7 @@ class StripeTerminal {
 
     if (this._currentService) {
       return Promise.reject(
-        'A service is already running. You must stop it using `stopService` before starting a new service.',
+          'A service is already running. You must stop it using `stopService` before starting a new service.',
       );
     }
 

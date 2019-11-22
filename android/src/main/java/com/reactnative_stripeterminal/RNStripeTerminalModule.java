@@ -61,6 +61,7 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
     List<? extends Reader> discoveredReadersList = null;
     ReaderSoftwareUpdate readerSoftwareUpdate;
     Cancelable pendingInstallUpdate = null;
+    Cancelable pendingCollectPayment = null;
 
     public RNStripeTerminalModule(ReactApplicationContext reactContext) {
         super(reactContext);
@@ -156,10 +157,10 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
     }
 
     @ReactMethod
-    public void discoverReaders(int deviceType, int method, int simulated) {
-        boolean isSimulated = simulated == 0?false:true;
+    public void discoverReaders() {
+        boolean isSimulated = false;
         try {
-            DeviceType devType = DeviceType.values()[deviceType];
+            DeviceType devType = DeviceType.values()[0];
             DiscoveryConfiguration discoveryConfiguration = new DiscoveryConfiguration(0, devType, isSimulated);
             Callback statusCallback = new Callback() {
 
@@ -257,7 +258,7 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
         PaymentIntentCallback paymentIntentCallback = new PaymentIntentCallback() {
             @Override
             public void onSuccess(@Nonnull final PaymentIntent paymentIntent) {
-                pendingCreatePaymentIntent = Terminal.getInstance().collectPaymentMethod(paymentIntent, RNStripeTerminalModule.this
+                pendingCollectPayment = Terminal.getInstance().collectPaymentMethod(paymentIntent, RNStripeTerminalModule.this
                         , new PaymentIntentCallback() {
                             @Override
                             public void onSuccess(@Nonnull final PaymentIntent collectedIntent) {
@@ -466,6 +467,28 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
     }
 
     @ReactMethod
+    public void cancelCollectPayment(){
+        if(pendingCollectPayment !=null && !pendingCollectPayment.isCompleted()){
+            pendingCollectPayment.cancel(new Callback() {
+                @Override
+                public void onSuccess() {
+                    pendingCollectPayment = null;
+                    sendEventWithName(EVENT_CANCEL_COLLECT_PAYMENT_COMPLETION, Arguments.createMap());
+                }
+
+                @Override
+                public void onFailure(@Nonnull TerminalException e) {
+                    WritableMap errorMap = Arguments.createMap();
+                    errorMap.putString(ERROR,e.getErrorMessage());
+                    sendEventWithName(EVENT_CANCEL_COLLECT_PAYMENT_COMPLETION, errorMap);
+                }
+            });
+        }else{
+            sendEventWithName(EVENT_CANCEL_COLLECT_PAYMENT_COMPLETION, Arguments.createMap());
+        }
+    }
+
+    @ReactMethod
     public void processPayment(){
         Terminal.getInstance().processPayment(lastPaymentIntent, new PaymentIntentCallback() {
             @Override
@@ -490,10 +513,11 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
 
     @ReactMethod
     public void collectPaymentMethod(){
-        pendingCreatePaymentIntent = Terminal.getInstance().collectPaymentMethod(lastPaymentIntent, this, new PaymentIntentCallback() {
+        pendingCollectPayment = Terminal.getInstance().collectPaymentMethod(lastPaymentIntent, this, new PaymentIntentCallback() {
             @Override
             public void onSuccess(@Nonnull PaymentIntent paymentIntent) {
                 pendingCreatePaymentIntent = null;
+                pendingCollectPayment = null;
                 lastPaymentIntent = paymentIntent;
                 WritableMap collectPaymentMethodMap = Arguments.createMap();
                 collectPaymentMethodMap.putMap(INTENT,serializePaymentIntent(paymentIntent,lastCurrency));
@@ -503,6 +527,7 @@ public class RNStripeTerminalModule extends ReactContextBaseJavaModule implement
             @Override
             public void onFailure(@Nonnull TerminalException e) {
                 pendingCreatePaymentIntent = null;
+                pendingCollectPayment = null;
                 WritableMap errorMap = Arguments.createMap();
                 errorMap.putString(ERROR,e.getErrorMessage());
                 errorMap.putInt(CODE,e.getErrorCode().ordinal());
