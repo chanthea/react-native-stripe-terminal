@@ -147,7 +147,7 @@ RCT_EXPORT_METHOD(initialize) {
     lastReaderEvent = SCPReaderEventCardRemoved;
 }
 
-RCT_EXPORT_METHOD(discoverReaders:(NSInteger *)deviceType method:(NSInteger *)method simulated:(BOOL *)simulated) {
+RCT_EXPORT_METHOD() {
     // Attempt to abort any pending discoverReader calls first.
     [self abortDiscoverReaders];
 
