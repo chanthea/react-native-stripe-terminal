@@ -151,9 +151,9 @@ RCT_EXPORT_METHOD(discoverReaders:(NSInteger *)deviceType method:(NSInteger *)me
     // Attempt to abort any pending discoverReader calls first.
     [self abortDiscoverReaders];
 
-    SCPDiscoveryConfiguration *config = [[SCPDiscoveryConfiguration alloc] initWithDeviceType:(SCPDeviceType)deviceType
-                                                                              discoveryMethod:(SCPDiscoveryMethod)method
-                                                                                    simulated:simulated];
+    SCPDiscoveryConfiguration *config = [[SCPDiscoveryConfiguration alloc] initWithDeviceType:0
+                                                                              discoveryMethod:1
+                                                                                    simulated:false];
     pendingDiscoverReaders = [SCPTerminal.shared discoverReaders:config delegate:self completion:^(NSError * _Nullable error) {
         pendingDiscoverReaders = nil;
         if (error) {
