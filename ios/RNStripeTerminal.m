@@ -147,7 +147,7 @@ RCT_EXPORT_METHOD(initialize) {
     lastReaderEvent = SCPReaderEventCardRemoved;
 }
 
-RCT_EXPORT_METHOD() {
+RCT_EXPORT_METHOD(discoverReaders) {
     // Attempt to abort any pending discoverReader calls first.
     [self abortDiscoverReaders];
 
