@@ -147,13 +147,13 @@ RCT_EXPORT_METHOD(initialize) {
     lastReaderEvent = SCPReaderEventCardRemoved;
 }
 
-RCT_EXPORT_METHOD(discoverReaders) {
+RCT_EXPORT_METHOD(discoverReaders:(NSInteger *)deviceType method:(NSInteger *)method simulated:(BOOL *)simulated) {
     // Attempt to abort any pending discoverReader calls first.
     [self abortDiscoverReaders];
 
-    SCPDiscoveryConfiguration *config = [[SCPDiscoveryConfiguration alloc] initWithDeviceType:0
-                                                                              discoveryMethod:1
-                                                                                    simulated:false];
+    SCPDiscoveryConfiguration *config = [[SCPDiscoveryConfiguration alloc] initWithDeviceType:(SCPDeviceType)deviceType
+                                                                              discoveryMethod:(SCPDiscoveryMethod)method
+                                                                                    simulated:simulated];
     pendingDiscoverReaders = [SCPTerminal.shared discoverReaders:config delegate:self completion:^(NSError * _Nullable error) {
         pendingDiscoverReaders = nil;
         if (error) {
@@ -293,7 +293,7 @@ RCT_EXPORT_METHOD(createPaymentIntent:(NSDictionary *)options) {
     SCPPaymentIntentParameters *params = [[SCPPaymentIntentParameters alloc] initWithAmount:amount currency:currency];
 
     NSInteger applicationFeeAmount = [RCTConvert NSInteger:options[@"applicationFeeAmount"]];
-    
+
     if (applicationFeeAmount) {
         params.applicationFeeAmount = [NSNumber numberWithInteger:applicationFeeAmount];
         params.onBehalfOf = options[@"onBehalfOf"];
