@@ -116,11 +116,11 @@ class StripeTerminal {
     }
 
     discoverReaders(deviceType, method, simulated) {
-        if (Platform.OS === 'android') {
-            return this._wrapPromiseReturn('readerDiscoveryCompletion', () => {
-                RNStripeTerminal.discoverReaders();
-            });
-        }
+//         if (Platform.OS === 'android') {
+//             return this._wrapPromiseReturn('readerDiscoveryCompletion', () => {
+//                 RNStripeTerminal.discoverReaders();
+//             });
+//         }
 
         return this._wrapPromiseReturn('readerDiscoveryCompletion', () => {
             RNStripeTerminal.discoverReaders(deviceType, method, simulated);
